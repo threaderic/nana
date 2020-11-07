@@ -2,11 +2,11 @@
 # -*- coding:utf-8 -*-
 
 """
-
+Sconstruct to launch, not to be called
 "!! The files Sconstruct.py and SconsLocalTools must be placed in the directory build/scons/
-of the nana's directory !!
+of the nana's directory.
 --> cause: relatives paths used (it could be placed in another directory
-but all Paths would be modified.
+but all Paths would be modified).
 """
 
 
@@ -15,11 +15,12 @@ import glob
 import multiprocessing # number of processor
 import pathlib # search current Directory
 
+
 # Local Scons Utilities and config (see file SconsLocalTools.py)
 import SconsLocalTools
 
 
-# 3 build modes
+# declare 3 possibles build modes to invoque to g++
 vars = Variables()
 vars.Add(EnumVariable('mode', 'Building mode', 'release',
                       allowed_values=('debug', 'profile', 'release')))
@@ -30,13 +31,12 @@ env.Append(CCCOMSTR = "Compiling $TARGET", LINKCOMSTR = "Linking $TARGET")
 
 # -------------- help (type: $ scons -h)
 Help(vars.GenerateHelpText(env))
-#env.Decider('content')
 env.Decider('MD5-timestamp')
 
-# Compile with max processor --> for n proceesor, equivalent to: $ scons -j n
+# Compile with max processor --> for n processor, equivalent to: $ scons -j n
 num_cpu = multiprocessing.cpu_count()
 SetOption('num_jobs', num_cpu)
-
+env.VariantDir('build', 'src')
 
 # -------------- Print Header information at the beginnning of the compilation
 SconsLocalTools.PrintHeader(env['mode'])
@@ -52,6 +52,7 @@ elif env['PLATFORM'] == 'posix':
 
 # basic flags according to build mode
 if env['mode'] == 'debug':
+    SetOption('warn', 'all')
     env.Append(CCFLAGS = ['-g', '-fexceptions', '-Wall', '-Wextra',
                           '-Wunused-variable', '-Wfatal-errors', '-O0', '-DDEBUG'])
 elif env['mode'] == 'release':
@@ -64,7 +65,6 @@ elif env['mode'] == 'profile':
     env.Append(CCFLAGS = ['-Wall', '-pg', '-O0', '-DNDEBUG'])
 
 
-# env.Append(CCFLAGS='-std=c++17 -no-pie -g3 -Wall -Wextra -I/usr/include/ -I. -I../../include/')
 env.Append(CPPPATH = ['../../include/',])               # CCFLAGS = -I../../include/
 env.Append(CCFLAGS='-std=c++17 -I/usr/local/include/ -I/usr/include/ -I/usr/include/freetype2')
 env.Append(LIBS=['pthread','X11','Xft','fontconfig',])
@@ -150,7 +150,7 @@ env = conf2.Finish()
 #                      '../../source/any.cpp','../../source/basic_types.cpp']
 matches_cpp_files = glob.glob('../../source/**/*.cpp', recursive = True)
 
-obj = env.Object(source = matches_cpp_files)
+obj = env.Object(source =  matches_cpp_files)
 # print(obj,len(obj))
 # for i in obj:
 # print("The object file is: %s" %obj[i])

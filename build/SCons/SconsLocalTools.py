@@ -1,7 +1,7 @@
 import sys
 import os
 import multiprocessing # number of processor
-
+import time
 # color 
 os.system("") # activation of this function https://stackoverflow.com/questions/287871/how-to-print-colored-text-in-python
 screen = sys.stdout
@@ -46,9 +46,13 @@ def PrintGreenFilled(text, width = 80, sep = ' '):
 
 def PrintHeader(envMode = 'release'):
     num_cpu = multiprocessing.cpu_count()
+
+    global tic
+    tic = time.time()
+
     clearTerminal()
     PrintReturn()
-    
+
     # basic flags according to build mode
     if envMode == 'debug' or envMode == 'profile':
         PrintRedFilled('',sep = '-')
@@ -71,33 +75,35 @@ def PrintHeader(envMode = 'release'):
 
 
 def print_finish(env, source, target):
-    print('\nDO IT \n\n')
+    print('\n')
     
     num_cpu = env['num_cpu']
     envMode = env['mode']
-     
+    
+    # toc
+    toc = time.time() - tic
+
     # basic flags according to build mode
     if envMode == 'debug' or envMode == 'profile':
         PrintRedFilled('',sep = '-')
-        PrintRedFilled('#     running with %s processors' % num_cpu)
-        PrintRedFilled('#     compiling in debug|profile mode')
+        PrintRedFilled('[100%]')
+        PrintRedFilled('elapsed time = %s s' % toc)
+        PrintRedFilled('#     runned with %s processors' % num_cpu)
+        PrintRedFilled('#     compiled in debug|profile mode')
         PrintRedFilled('#     --> $ scons -j %s mode=%s' % (num_cpu, envMode))
         PrintRedFilled('#     if other mode wanted, please type: $ scons -h')
         PrintRedFilled('#     For help on scons, please type: $ scons -H')
         PrintRedFilled('',sep = '-')
     elif envMode == 'release':
         PrintBlueFilled('',sep = '-')
-        PrintBlueFilled('#     running with %s processors' % num_cpu)
-        PrintBlueFilled('#     compiling in release mode, silent')
+        PrintBlueFilled('[100%]')
+        PrintBlueFilled('elapsed time = %s s' % toc)
+        PrintBlueFilled('#     runned with %s processors' % num_cpu)
+        PrintBlueFilled('#     compiled in release mode')
         PrintBlueFilled('#     --> $ scons -j %s mode=%s --silent'.ljust(60,' ') % (num_cpu, envMode))
         PrintBlueFilled('#     if other mode wanted, please type: $ scons -h')
         PrintBlueFilled('#     For help on scons, please type: $ scons -H')
         PrintBlueFilled('',sep = '-')
-
-    # raise Exception( 'DO IT' )
-
-
-
 
 
 def show_progress(env, number_of_nodes = 316, mode = 'release', nameTarget = 'Library'):
@@ -133,24 +139,24 @@ def show_progress(env, number_of_nodes = 316, mode = 'release', nameTarget = 'Li
                 elif node_count_max > 0 and node_count > node_count_max*2:
                     screen.write("\r[100%] ")
                     screen.flush()
-                elif node_count >= node_count_max and mode == 'release':
-                    PrintReturn()
-                    PrintBlue('\n[100%] ' + 'build of %s finished ;) !' % (nameTarget))
-                    PrintBlue("#      to suppress builded files, type $ scons -c")
-                    PrintReturn
-                    screen.flush()
-                    progress_finish_command = Command("progress_finish", [], progress_finish)
-                elif node_count >= node_count_max and (mode == 'debug' or mode == 'profile'):
-                    PrintReturn()
-                    PrintRed("['[100%] ' + 'build of %s finished ;) !' % (nameTarget)")
-                    PrintReturn()
-                    PrintRed('#     --> number of nodes: ')
-                    PrintRed('#     %s'% node_count)
-                    PrintRed('#     --> put to the function SconsTools.show_progress() in the Soncscript file: ')
-                    PrintRed("#     to suppress builded files, type $ scons mode=(debug) (profile) -c")
-                    PrintReturn()
-                    screen.flush()
-                    progress_finish_command = Command("progress_finish", [], progress_finish)
+                #elif node_count >= node_count_max and mode == 'release':
+                    #PrintReturn()
+                    #PrintBlue('\n[100%] ' + 'build of %s finished ;) !' % (nameTarget))
+                    #PrintBlue("#      to suppress builded files, type $ scons -c")
+                    #PrintReturn
+                    #screen.flush()
+                    #progress_finish_command = Command("progress_finish", [], progress_finish)
+                #elif node_count >= node_count_max and (mode == 'debug' or mode == 'profile'):
+                    #PrintReturn()
+                    #PrintRed("['[100%] ' + 'build of %s finished ;) !' % (nameTarget)")
+                    #PrintReturn()
+                    #PrintRed('#     --> number of nodes: ')
+                    #PrintRed('#     %s'% node_count)
+                    #PrintRed('#     --> put to the function SconsTools.show_progress() in the Soncscript file: ')
+                    #PrintRed("#     to suppress builded files, type $ scons mode=(debug) (profile) -c")
+                    #PrintReturn()
+                    #screen.flush()
+                    #progress_finish_command = Command("progress_finish", [], progress_finish)
                 else:
                     screen.write("\n\n[Initial build] ")
                     screen.flush()

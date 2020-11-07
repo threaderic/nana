@@ -50,3 +50,16 @@ cmake_install.cmake
 *.db
 *.opendb
 .vscode
+
+# for projects that use SCons for building: http://http://www.scons.org/
+.sconsign.dblite
+.sconf_temp/
+.scons_node_count
+.sconsign.dblite
+__pycache__/
+
+## for object and library
+*.[oa]
+
+## When configure fails, SCons outputs this file
+config.log

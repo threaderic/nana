@@ -70,9 +70,12 @@ def PrintHeader(envMode = 'release'):
 
 
 
-def finish(  num_cpu,envMode ):
+def print_finish(env, source, target):
     print('\nDO IT \n\n')
     
+    num_cpu = env['num_cpu']
+    envMode = env['mode']
+     
     # basic flags according to build mode
     if envMode == 'debug' or envMode == 'profile':
         PrintRedFilled('',sep = '-')
